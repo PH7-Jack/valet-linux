@@ -50,6 +50,7 @@ class PhpFpm
             $this->pm->ensureInstalled("php{$this->getPhpVersion()}-fpm");
             $this->sm->enable($this->fpmServiceName());
         }
+
         output('<info>PHP Logs');
         $this->files->ensureDirExists('/var/log', user());
 
@@ -60,7 +61,6 @@ class PhpFpm
         $this->restart();
 
         $this->symlinkPrimaryValetSock();
-
     }
 
     /**
@@ -83,9 +83,15 @@ class PhpFpm
      */
     public static function normalizePhpVersion($version)
     {
-        return substr(preg_replace('/(?:php@?)?([0-9+])(?:.)?([0-9+])/i', '$1.$2', (string)$version), 0, 3);
+        return substr(
+            preg_replace(
+                '/(?:php@?)?([0-9+])(?:.)?([0-9+])/i',
+                '$1.$2', (string)$version
+            ),
+            0,
+            3
+        );
     }
-
 
     /**
      * Validate the requested version to be sure we can support it.
@@ -392,7 +398,6 @@ class PhpFpm
         }
 
         return "php{$version}-fpm";
-
     }
 
 
@@ -404,7 +409,6 @@ class PhpFpm
      */
     public static function fpmSockName($phpVersion = null)
     {
-
         $versionInteger = preg_replace('~[^\d]~', '', $phpVersion);
 
         return "valet{$versionInteger}.sock";
@@ -520,6 +524,10 @@ class PhpFpm
 
         if (!$this->version) {
             $this->version = $this->normalizePhpVersion(PHP_VERSION);
+        }
+
+        if ($this->version === '8.2') {
+            $this->version = '';
         }
 
         return $this->version;

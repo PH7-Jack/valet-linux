@@ -12,8 +12,10 @@ class Pacman implements PackageManager
 
     const SUPPORTED_PHP_VERSIONS = [
         'php',
+        'php81',
+        'php80',
+        'php74',
     ];
-
 
     /**
      * Create a new Pacman instance.
