@@ -530,6 +530,8 @@ class PhpFpm
             $this->version = '';
         }
 
+        $this->version = str_replace('.', '', $this->version);
+
         return $this->version;
     }
 }

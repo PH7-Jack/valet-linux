@@ -12,9 +12,6 @@ class Pacman implements PackageManager
 
     const SUPPORTED_PHP_VERSIONS = [
         'php',
-        'php81',
-        'php80',
-        'php74',
     ];
 
     /**
@@ -36,6 +33,8 @@ class Pacman implements PackageManager
      */
     public function packages($package)
     {
+        $package = $this->normalize($package);
+
         $query = "pacman -Qqs {$package}";
 
         return explode(PHP_EOL, $this->cli->run($query));
@@ -49,7 +48,12 @@ class Pacman implements PackageManager
      */
     public function installed($package)
     {
-        return in_array($package, $this->packages($package));
+        return in_array($this->normalize($package), $this->packages($package));
+    }
+
+    public function normalize($package)
+    {
+        return str_replace('.', '', $package);
     }
 
     /**
@@ -60,6 +64,8 @@ class Pacman implements PackageManager
      */
     public function ensureInstalled($package)
     {
+        $package = $this->normalize($package);
+
         if (!$this->installed($package)) {
             $this->installOrFail($package);
         }
@@ -73,6 +79,8 @@ class Pacman implements PackageManager
      */
     public function installOrFail($package)
     {
+        $package = $this->normalize($package);
+
         output('<info>[' . $package . '] is not installed, installing it now via Pacman...</info> 🍻');
 
         $this->cli->run(trim('pacman --noconfirm --needed -S ' . $package), function ($exitCode, $errorOutput) use ($package) {
